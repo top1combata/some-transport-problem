@@ -1,0 +1,3 @@
+[submodule "quadpackcpp"]
+	path = quadpackcpp
+	url = https://github.com/top1combata/quadpackcpp.git
