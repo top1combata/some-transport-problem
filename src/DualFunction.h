@@ -1,5 +1,8 @@
+#pragma once
+
 #include <functional>
 #include <concepts>
+#include <cmath>
 
 
 template<class Real>
@@ -147,4 +150,14 @@ template<class Real>
 DualFunction<Real> operator-(const DualFunction<Real>& f)
 {
     return (-1) * f;
+}
+
+namespace ElementaryDualFunctions
+{
+    static DualFunction<double> X([](double x){return x;}, [](double){return 1;});
+    static DualFunction<double> Sin([](double x){return std::sin(x);}, [](double x){return std::cos(x);});
+    static DualFunction<double> Cos([](double x){return std::cos(x);}, [](double x){return -std::sin(x);});
+    static DualFunction<double> Exp([](double x){return std::exp(x);}, [](double x){return std::exp(x);});
+    static DualFunction<double> Log([](double x){return std::log(x);}, [](double x){return 1/x;});
+    static DualFunction<double> Sqrt([](double x){return std::sqrt(x);}, [](double x){return 1 / sqrt(x) / 2;});
 }
