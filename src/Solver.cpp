@@ -12,23 +12,20 @@ DualFunction<double> getY(const Vector& coeffs, unsigned n);
 Vector gradient(Vector coeffs, double);
 
 
-DualFunction<double> RayleighRitz(unsigned n, double eps)
+DualFunction<double> RayleighRitz(unsigned n, double eps, double step)
 {
     Vector coeffs = Vector::Zero(n+1, 1);
 
     double error = std::numeric_limits<double>::max();
-    double step = 2;
-    constexpr double ratio = 1.05;
+    Vector velocity = Vector::Zero(n+1, 1);
+    constexpr double beta = 0.9;
 
-    while (error > eps)
+    for (int iterNum = 0; error > eps; iterNum++)
     {
-        Vector grad = gradient(coeffs, step/10);
-        error = grad.norm();
+        velocity = beta * velocity + step * gradient(coeffs - beta * velocity, eps);
+        error = velocity.norm();
+        coeffs -= velocity;
         std::cout << "Error : " << std::scientific << error << '\n';
-
-        coeffs += -grad * (step / error);
-
-        step /= ratio;
     }
 
     return getY(coeffs, n);
@@ -41,7 +38,7 @@ DualFunction<double> BasisFunction(unsigned k)
     using namespace ElementaryDualFunctions;
     using std::numbers::pi;
 
-    return Sin(pi / (endPoint - startPoint) * (X - DualFunction<double>(startPoint)));
+    return Sin(k * pi / (endPoint - startPoint) * (X - DualFunction<double>(startPoint)));
 }
 
 

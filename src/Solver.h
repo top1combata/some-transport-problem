@@ -2,4 +2,4 @@
 
 #include "DualFunction.h"
 
-DualFunction<double> RayleighRitz(unsigned n, double eps);
+DualFunction<double> RayleighRitz(unsigned n, double eps, double step);
