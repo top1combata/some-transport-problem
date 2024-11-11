@@ -49,6 +49,19 @@ public:
         return DualFunction(function, derivative);
     };
 
+    DualFunction pow(unsigned k) const
+    {
+        auto function = [k, f = this->function()](Real x)
+        {
+            return std::pow(f(x), k);
+        };
+        auto derivative = [k, f = this->function(), df = this->derivative()](Real x)
+        {
+            return k * std::pow(f(x), k-1) * df(x);
+        };
+        return DualFunction(function, derivative);
+    }
+
 private:
 
     FunctionType m_function;
