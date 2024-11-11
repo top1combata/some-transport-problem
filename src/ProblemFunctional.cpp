@@ -22,9 +22,9 @@ double ProblemFunctional(DualFunction<double> Y)
         return beta.function()(x) * curve(x);
     };
 
-    static Workspace<double> workspace(128, 10);
+    static Workspace<double> workspace(128, 5);
 
-    constexpr double epsabs = 1e-5;
+    constexpr double epsabs = 1e-7;
     double abserr, integral1, integral2;
 
     workspace.qag(curve, startPoint, endPoint, epsabs, 0, integral1, abserr);

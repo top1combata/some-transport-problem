@@ -5,7 +5,7 @@
 namespace ProblemConstants
 {
     // interval [startpoint, endpoint]
-    constexpr double startPoint = 0.03;
+    constexpr double startPoint = 0;
     constexpr double endPoint = 1;
 
     // boundary values for problem
