@@ -39,7 +39,8 @@ DualFunction<double> RayleighRitz(unsigned n, double eps, double step)
 
     double error = std::numeric_limits<double>::max();
 
-    for (int iterNum = 0; error > eps; iterNum++)
+    int iterNum;
+    for (iterNum = 0; error > eps; iterNum++)
     {
         prevGrad = grad;
         grad = gradient(coeffs, step * eps);
@@ -56,6 +57,7 @@ DualFunction<double> RayleighRitz(unsigned n, double eps, double step)
         error = grad.norm();
         std::cout << "Residual " << std::scientific << error << '\n';
     }
+    std::cout << "Total iterations taken : " << iterNum << '\n';
 
     return getY(coeffs);
 }
