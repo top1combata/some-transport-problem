@@ -8,16 +8,20 @@
 using Vector = Eigen::Matrix<double, Eigen::Dynamic, 1>;
 
 
-DualFunction<double> getY(const Vector& coeffs, unsigned n);
-Vector gradient(Vector coeffs, double);
+DualFunction<double> getY(const Vector& coeffs);
+Vector gradient(const Vector& coeffs, double);
 
 
 DualFunction<double> RayleighRitz(unsigned n, double eps, double step)
 {
-    Vector coeffs = Vector::Zero(n+1, 1);
+    assert(eps > 0);
+    assert(step > 0);
+    assert(n != 0);
+
+    Vector coeffs = Vector::Zero(n, 1);
 
     double error = std::numeric_limits<double>::max();
-    Vector velocity = Vector::Zero(n+1, 1);
+    Vector velocity = Vector::Zero(n, 1);
     constexpr double beta = 0.9;
 
     for (int iterNum = 0; error > eps; iterNum++)
@@ -28,11 +32,11 @@ DualFunction<double> RayleighRitz(unsigned n, double eps, double step)
         std::cout << "Error : " << std::scientific << error << '\n';
     }
 
-    return getY(coeffs, n);
+    return getY(coeffs);
 }
 
 
-DualFunction<double> BasisFunction(unsigned k)
+DualFunction<double> basisFunction(unsigned k)
 {
     using namespace ProblemConstants;
     using namespace ElementaryDualFunctions;
@@ -45,38 +49,44 @@ DualFunction<double> BasisFunction(unsigned k)
 }
 
 
-DualFunction<double> getY(const Vector& coeffs, unsigned n)
+DualFunction<double> getY(const Vector& coeffs)
 {
+    unsigned n = coeffs.size();
+    assert(n != 0);
+
     using namespace ProblemConstants;
     using namespace ElementaryDualFunctions;
 
     double bias = (startValue * endPoint - endValue * startPoint) / (endPoint - startPoint);
     double slope = (endValue - startValue) / (endPoint - startPoint);
 
+    // line connecting boundary points
     DualFunction<double> Y = DualFunction<double>(bias) + slope * X;
 
-    for (unsigned k = 0; k <= n; k++)
-        Y = Y + coeffs[k] * BasisFunction(k);
+    for (unsigned k = 1; k <= n; k++)
+        Y = Y + coeffs[k-1] * basisFunction(k);
 
     return Y;
 }
 
 
-Vector gradient(Vector coeffs, double dC)
+Vector gradient(const Vector& coeffs, double dC)
 {
-    unsigned n = coeffs.size() - 1;
-    Vector grad = Vector(coeffs.size(), 1);
+    unsigned n = coeffs.size();
+    assert(n != 0);
 
-    double functionalValue = ProblemFunctional(getY(coeffs, n));
+    Vector grad = Vector(n, 1);
 
-    for (int k = 0; k < grad.size(); k++)
+    for (int k = 0; k < n; k++)
     {
-        double pivot = coeffs[k];
-        coeffs[k] += dC;
-        double newValue = ProblemFunctional(getY(coeffs, n));
-        coeffs[k] = pivot;
+        Vector delta = Vector::Zero(n, 1);
+        delta[k] = dC;
         
-        grad[k] = (newValue - functionalValue) / dC;
+        // second order scheme
+        // [f(x + h) - f(x - h)] / 2h
+        double nextValue = ProblemFunctional(getY(coeffs + delta));
+        double prevValue = ProblemFunctional(getY(coeffs - delta));
+        grad[k] = (nextValue - prevValue) / (2 * dC);
     }
 
     return grad;
