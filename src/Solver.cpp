@@ -114,7 +114,7 @@ DualFunction<double> basisFunction(unsigned k)
     using namespace ElementaryDualFunctions;
     using std::numbers::pi;
 
-    return Sin(k * pi / (endPoint - startPoint) * (X - DualFunction<double>(startPoint)));
+    return 1 / std::sqrt(k) * Sin(k * pi / (endPoint - startPoint) * (X - DualFunction<double>(startPoint)));
 
     // DualFunction<double> base = (X - DualFunction<double>(startPoint)) * (DualFunction<double>(endPoint) - X);
     // return base.pow(k+1);

@@ -3,6 +3,7 @@
 #include "DualFunction.h"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 
 
 int main(int argc, char** argv)
@@ -20,7 +21,7 @@ int main(int argc, char** argv)
     double step  = std::stod(argv[3]);
 
     auto Y = RayleighRitz(n, eps, step);
-    std::cout << "\nFunctional value " << std::defaultfloat <<  ProblemFunctional(Y) << '\n';
+    std::cout << "\nFunctional value " << std::defaultfloat << std::setprecision(10) << ProblemFunctional(Y) << '\n';
 
     using namespace ProblemConstants;
 
